@@ -1,0 +1,2 @@
+# To run a single example
+tesseract 0001.jpg out.jpg debug_config
