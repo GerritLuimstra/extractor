@@ -1,5 +1,6 @@
-import string
 import re
+import string
+from Levenshtein import distance
 
 
 def clean_text(input):
@@ -27,10 +28,22 @@ def clean_text(input):
 
 
 def find_max(votes):
-    max_ = 0
-    key_ = "N/A"
-    for k, v in votes.items():
-        if v > max_:
-            max_ = v
-            key_ = k
-    return key_
+    votes = [(k, v) for k, v in votes.items()]
+    votes = list(sorted(votes, key=lambda x: x[1], reverse=True))
+    if votes[0][1] == votes[1][1]:  # tie
+        return "N/A"
+    return votes[0][0]
+
+
+def partial_match(full_string, key, max_distance, verbose=False):
+    full_string = full_string.replace(" ", "")
+    key = key.replace(" ", "")
+    N, M = len(full_string), len(key)
+    hits = 0
+    for i in range(N - M + 1):
+        window = full_string[i: i + M]
+        if distance(window, key, score_cutoff=max_distance) <= max_distance:
+            if verbose:
+                print(window)
+            hits += 1
+    return hits
