@@ -1,12 +1,19 @@
 import re
 import string
+import argparse
 from Levenshtein import distance
 
 
-def clean_text(input):
+def get_args_parser():
+    parser = argparse.ArgumentParser('OCR Text Extractor', add_help=False)
+    parser.add_argument('--file', required=True, help="Path to the heuristics file.")
+    return parser
+
+
+def clean_text(inp):
 
     # First convert to tokens
-    tokens = input.strip().lower()
+    tokens = inp.strip().lower()
     tokens = tokens.translate(str.maketrans('', '', string.punctuation))
 
     # Remove unnecessary characters
@@ -15,7 +22,7 @@ def clean_text(input):
         tokens = tokens.replace(char, "")
     tokens = tokens.replace("\n", " ")
 
-    # Remove numbers (TODO: is this too aggresive?)
+    # Remove numbers (TODO: is this too aggressive?)
     tokens = re.sub(r'[0-9]+', "", tokens)
 
     # Split on space
@@ -47,3 +54,28 @@ def partial_match(full_string, key, max_distance, verbose=False):
                 print(window)
             hits += 1
     return hits
+
+
+def parse_heuristics_file(file):
+
+    # Obtain the file contents
+    with open(file) as f:
+        contents = f.read()
+
+    # Extract the lines
+    lines = contents.split("\n")
+
+    # Parse the file contents
+    # and extract the heuristics
+    heuristics = {}
+    last = ""
+    for line in lines:
+        if "    " in line:
+            heuristics[last].append(line.replace("-", "").strip())
+        else:
+            last = line.strip()
+            heuristics[last] = []
+
+    return heuristics
+
+
