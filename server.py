@@ -51,10 +51,11 @@ def upload_file():
 
         # Store the file
         filename = secure_filename(file.filename)
-        file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+        filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+        file.save(filepath)
 
         # Convert the PDF to images
-        pages = convert_from_path(os.path.join(app.config['UPLOAD_FOLDER'], filename), DPI,
+        pages = convert_from_path(filepath, DPI,
                                   poppler_path=r"C:\Apps\popper\poppler-23.07.0\Library\bin")
 
         votes = {k: 0 for k, v in heuristics.items() if len(v) != 0}
@@ -85,6 +86,7 @@ def upload_file():
 
         # Did we find a candidate?
         if prediction != "N/A":
+            os.remove(filepath)
             return prediction
 
         # Perform partial matching if exact matching fails
@@ -97,9 +99,11 @@ def upload_file():
 
         # Did we find a candidate?
         if prediction != "N/A":
+            os.remove(filepath)
             return prediction
 
-        print("oops")
+        os.remove(filepath)
+        return "N/A"
 
     # if request.method == 'POST':
     #     # check if the post request has the file part
