@@ -1,41 +1,25 @@
 ADHD Noord
-
 AtHomeFirst
     - athomefirst
-
 De Buinerhof
-
 Cosis
     - cosis
-
 CuraXL
-
 Dokter
     - schoonmaakorganisatie
     - dokter
-
 Eigen Pad
-
 Leger Des Heils
-
 Scilla Andante
-
 Thalia
     - thalia
-
 De Toegang
     - advies om mee te doen
     - de toegang
-
 Treant
-
 VNN
-
 Wender (Kopland)
-
 Zorggroep Vitez
-
 De Zorgzaak
-
 ZaZaDi
     - zazadi

@@ -10,14 +10,13 @@ import argparse
 # parser = argparse.ArgumentParser('OCR Text Extractor', parents=[get_args_parser()])
 # args = parser.parse_args()
 
-# HACK FOR NOW
-args = {}
-args["file"] = "heuristics.txt"
-
 UPLOAD_FOLDER = './uploads/'
 ALLOWED_EXTENSIONS = {'pdf'}
 
-heuristics = parse_heuristics_file(args["file"])
+heuristics = [
+    parse_heuristics_file("heuristics.txt"),
+    parse_heuristics_file("heuristics_type.txt")
+]
 
 DPI = 100
 MAX_DISTANCE = 1
@@ -58,7 +57,6 @@ def upload_file():
         pages = convert_from_path(filepath, DPI,
                                   poppler_path=r"C:\Apps\popper\poppler-23.07.0\Library\bin")
 
-        votes = {k: 0 for k, v in heuristics.items() if len(v) != 0}
         cleaned_content = ""
         for page in pages:
 
@@ -76,56 +74,39 @@ def upload_file():
             # Extract the cleaned content
             cleaned_content = cleaned_content + " " + clean_text(content)
 
-        # Perform exact matching first
-        for supplier, h in heuristics.items():
-            for heuristic in h:
-                votes[supplier] += cleaned_content.count(heuristic)
-
-        # Compute the prediction
-        prediction = find_max(votes)
-
-        # Did we find a candidate?
-        if prediction != "N/A":
-            os.remove(filepath)
-            return prediction
-
-        # Perform partial matching if exact matching fails
-        for supplier, h in heuristics.items():
-            for heuristic in h:
-                votes[supplier] += partial_match(cleaned_content, heuristic, MAX_DISTANCE) > 0
-
-        # Compute the prediction again
-        prediction = find_max(votes)
-
-        # Did we find a candidate?
-        if prediction != "N/A":
-            os.remove(filepath)
-            return prediction
-
+        # Remove the file
         os.remove(filepath)
-        return "N/A"
 
-    # if request.method == 'POST':
-    #     # check if the post request has the file part
-    #     if 'file' not in request.files:
-    #         flash('No file part')
-    #         return redirect(request.url)
-    #     file = request.files['file']
-    #     # If the user does not select a file, the browser submits an
-    #     # empty file without a filename.
-    #     if file.filename == '':
-    #         flash('No selected file')
-    #         return redirect(request.url)
-    #     if file and allowed_file(file.filename):
-    #         filename = secure_filename(file.filename)
-    #         file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-    #         return redirect(url_for('download_file', name=filename))
-    return '''
-    <!doctype html>
-    <title>Upload new File</title>
-    <h1>Upload new File</h1>
-    <form method=post enctype=multipart/form-data>
-      <input type=file name=file>
-      <input type=submit value=Upload>
-    </form>
-    '''
+        predictions = []
+        for heuristic_dict in heuristics:
+            votes = {k: 0 for k, v in heuristic_dict.items() if len(v) != 0}
+
+            # Perform exact matching first
+            for supplier, h in heuristic_dict.items():
+                for heuristic in h:
+                    votes[supplier] += cleaned_content.count(heuristic)
+
+            # Compute the prediction
+            prediction = find_max(votes)
+
+            # Did we find a candidate?
+            if prediction != "N/A":
+                predictions.append(prediction)
+                continue
+
+            # Perform partial matching if exact matching fails
+            for supplier, h in heuristic_dict.items():
+                for heuristic in h:
+                    votes[supplier] += partial_match(cleaned_content, heuristic, MAX_DISTANCE) > 0
+
+            # Compute the prediction again
+            prediction = find_max(votes)
+
+            # Did we find a candidate?
+            if prediction != "N/A":
+                predictions.append(prediction)
+                continue
+
+            predictions.append("N/A")
+
+        return ";".join(predictions)
