@@ -10,7 +10,7 @@ parser = argparse.ArgumentParser('OCR Text Extractor', parents=[get_args_parser(
 args = parser.parse_args()
 
 # Point to the tesseract executable
-pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract'
+pytesseract.pytesseract.tesseract_cmd = r'D:\tesseract\tesseract'
 
 heuristics = parse_heuristics_file(args.file)
 
@@ -25,7 +25,7 @@ correct = 0
 for i, row in tqdm.tqdm(dataset.iterrows(), total=len(dataset)):
 
     # Convert the PDF to images
-    pages = convert_from_path(INPUTS_DIR + row["file"], DPI)
+    pages = convert_from_path(INPUTS_DIR + row["file"], DPI, poppler_path=r"D:\popper\poppler-23.07.0\Library\bin")
 
     votes = {k: 0 for k, v in heuristics.items() if len(v) != 0}
     cleaned_content = ""
