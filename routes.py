@@ -1,9 +1,6 @@
-from flask import request, jsonify
-from helpers import allowed_file, ALLOWED_EXTENSIONS, find_max, partial_match, parse_heuristics_file, \
+from flask import jsonify
+from helpers import check_if_valid_upload, ALLOWED_EXTENSIONS, find_max, partial_match, parse_heuristics_file, \
     extract_ocr_content, match_exact, match_partial
-
-
-
 
 
 def cleaned(app, config):
