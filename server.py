@@ -114,3 +114,31 @@ def classify_all():
                 description: A json object with the votes for each provided class
         """
     return routes.classify_all(app, config)
+
+
+@app.route('/fetch', methods=['POST'])
+def fetch():
+    """
+        Endpoint to obtain all the terms from a TXT file, that are contained in the provided PDF file.
+        For example,
+        For example, if the PDF contains the text "Richard Feynman" and the provided TXT file contains the term to look
+        for as "Feynman", then this term is added to the output list of contained terms.
+
+        ---
+        parameters:
+        - in: file
+          name: file
+          type: file
+          required: true
+          description: The PDF file to extract the text content from.
+        - in: match
+          name: match
+          type: file
+          required: true
+          description: A TXT file with a space seperated list of terms to look for<br>
+            term1 term2 term3 term4
+          responses:
+              200:
+                description: A JSON list of terms that the PDF contains and are found in the provided match TXT file.
+        """
+    return routes.fetch(app, config)

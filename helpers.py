@@ -89,8 +89,8 @@ def parse_heuristics_file(contents):
     return heuristics
 
 
-def allowed_file(filename):
-    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+def allowed_file(filename, allowed_extensions):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in allowed_extensions
 
 
 def extract_ocr_content(file, app, config):
@@ -126,4 +126,25 @@ def extract_ocr_content(file, app, config):
 
     return cleaned_content
 
+
+def match_exact(content, heuristics):
+    votes = {k: 0 for k, v in heuristics.items()}
+
+    # Perform exact matching first
+    for supplier, h in heuristics.items():
+        for heuristic in h:
+            votes[supplier] += content.count(heuristic)
+
+    return votes
+
+
+def match_partial(content, heuristics, max_distance):
+    votes = {k: 0 for k, v in heuristics.items()}
+
+    # Perform partial matching
+    for supplier, h in heuristics.items():
+        for heuristic in h:
+            votes[supplier] += partial_match(content, heuristic, max_distance) > 0
+
+    return votes
 
