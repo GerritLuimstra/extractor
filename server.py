@@ -27,3 +27,8 @@ def cleaned():
 @app.route('/classify', methods=['POST'])
 def classify():
     return routes.classify(app, config)
+
+
+@app.route('/classify_all', methods=['POST'])
+def classify_all():
+    return routes.classify_all(app, config)
