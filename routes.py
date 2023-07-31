@@ -1,4 +1,4 @@
-from flask import request
+from flask import request, jsonify
 from helpers import allowed_file, ALLOWED_EXTENSIONS, find_max, partial_match, parse_heuristics_file, \
     extract_ocr_content
 
@@ -135,4 +135,4 @@ def classify_all(app, config):
         for heuristic in h:
             votes[supplier] += partial_match(cleaned_content, heuristic, config.max_distance) > 0
 
-    return votes
+    return jsonify(votes)
