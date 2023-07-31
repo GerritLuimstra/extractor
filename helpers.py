@@ -17,6 +17,7 @@ class Config:
         self.max_distance = max_distance
         self.upload_folder = upload_folder
 
+
 def get_args_parser():
     parser = argparse.ArgumentParser('OCR Text Extractor', add_help=False)
     parser.add_argument('--file', required=True, help="Path to the heuristics file.")
