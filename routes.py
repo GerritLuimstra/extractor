@@ -3,22 +3,7 @@ from helpers import allowed_file, ALLOWED_EXTENSIONS, find_max, partial_match, p
     extract_ocr_content, match_exact, match_partial
 
 
-def check_if_valid_upload(file_name, allowed_extensions):
 
-    # Obtain the file
-    if file_name not in request.files:
-        return f"File '{file_name}' is missing from the request.", 422
-
-    # Obtain the file and heuristics contents
-    file = request.files[file_name]
-
-    if file.filename == '':
-        return f"File '{file_name}' header is present, but does not contain a file.", 422
-
-    if not allowed_file(file.filename, allowed_extensions):
-        return f"File '{file_name}' does not have the correct extension. Must be one of {allowed_extensions}", 422
-
-    return file, 200
 
 
 def cleaned(app, config):
